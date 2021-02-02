@@ -10,7 +10,10 @@ intents.presences = True
 client = discord.Client(intents=intents)
 
 victim_test = 178997121737949184
+
 target_id = 229060723550978051
+target = None
+state = 0
 
 try:
     f = open('state', 'x')
@@ -27,57 +30,29 @@ except:
 
 @client.event
 async def on_voice_state_update(member, before, after):
-    if after.channel is not None:
-        if member.id == target_id:
-            if before.channel != after.channel:
-                this_index = member.guild.voice_channels.index(after.channel)
-                vc_len = len(member.guild.voice_channels)
-                if this_index < vc_len - 1:
-                    target_channel = member.guild.voice_channels[this_index + 1]
-                else:
-                    target_channel = member.guild.voice_channels[0]
-                for member in member.voice.channel.members:
-                    if member.id != target_id:
-                        try:
-                            await member.move_to(target_channel)
-                        except:
-                            pass
+    if state == 0:
+        return
+    if state == 1:
+        if after.channel is not None:
+            if member.id == target_id:
+                if before.channel != after.channel:
+                    this_index = member.guild.voice_channels.index(after.channel)
+                    vc_len = len(member.guild.voice_channels)
+                    if this_index < vc_len - 1:
+                        target_channel = member.guild.voice_channels[this_index + 1]
+                    else:
+                        target_channel = member.guild.voice_channels[0]
+                    for member in member.voice.channel.members:
+                        if member.id != target_id:
+                            try:
+                                await member.move_to(target_channel)
+                            except:
+                                pass
     return
 
 
         
 
-# @client.event
-# async def on_voice_state_update(member, before, after):
-#     if member.id == victim_test:
-
-#         print('member.id == victim_test: ', member.id == victim_test)
-
-#         if before.channel != after.channel:
-#             print('before.channel is None and after.channel is not None:', before.channel is None and after.channel is not None)
-
-#             this_channel = after.channel
-
-#             for i in range(len(member.guild.voice_channels)):
-#                 if member.guild.voice_channels[i] == this_channel:
-                 
-
-#                     if i < len(member.guild.voice_channels):
-#                         target_channel = member.guild.voice_channels[i+1]
-#                     else:
-#                         target_channel = member.guild.voice_channels[0]
-
-             
-
-
-#                     for member in member.guild.voice_channels[i].members:
-#                         print('member name: ', member.name)
-#                         print('member.id != victim_test: ', member.id != victim_test)
-#                         if member.id != victim_test:
-#                             print('member to move: ', member)
-#                             await member.move_to(target_channel)
-           
-#     return
 
 def get_victim(message):
     troller = message.author
@@ -110,18 +85,37 @@ async def on_message(message):
 
     if message.content.startswith('$random'):
         random_target = get_victim(message)
+        state_to_1()
         f = open('state', 'w')
         f.write(f"1\n{random_target}")
         f.close()
-        
     
-    if message.content.startswith('$choose') and len(message.split()) == 2:
-        f = open
+    if message.content.startswith('$state'):
+        print('current state: ', state)
+    
+    if message.content.startswith('$choose') and len(message.mentions) == 1:
+        set_target(message.mentions[0])
+        state_to_2()
         
+def state_to_1():
+    global state
+    state = 1
+    print('state to: ', state)
+    return state
+    
+def state_to_2():
+    global state
+    state = 2
+    print('state to: ', state)
+    return state
 
-    
-    #if message.content.startswith('$connect'):
-    #    first_channel = message.channel.guild.voice_channels[0]
-    #    await first_channel.connect(timeout=10.0, reconnect=True)
+def set_target(new_target):
+    global target
+    target = new_target
+    print('new target: ', new_target)
+    return target
+
+
+print('state global: ', state)
 
 client.run(os.getenv('TOKEN'))
