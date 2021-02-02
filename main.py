@@ -10,22 +10,14 @@ intents.presences = True
 client = discord.Client(intents=intents)
 
 victim_test = 178997121737949184
-
 target_id = 229060723550978051
+
 target = None
 state = 0
 
-try:
-    f = open('state', 'x')
-    f.close()
-except:
-    print('state has already been created')
-
-    
 
 
 
-    
 
 
 @client.event
@@ -66,12 +58,7 @@ def get_victim(message):
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    try:
-        f = open('state', 'w')
-        f.write('0\nNone')
-        f.close()
-    except:
-        pass
+
 
 @client.event
 async def on_message(message):
@@ -86,9 +73,7 @@ async def on_message(message):
     if message.content.startswith('$random'):
         random_target = get_victim(message)
         state_to_1()
-        f = open('state', 'w')
-        f.write(f"1\n{random_target}")
-        f.close()
+ 
     
     if message.content.startswith('$state'):
         print('current state: ', state)
