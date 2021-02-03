@@ -24,19 +24,22 @@ state = 0
 async def on_voice_state_update(member, before, after):
     if state == 0:
         return
-    if state == 1:
-        if member.id == target.id:
-            if after.channel is not None:
-                await asyncio.sleep(1)
-                next_channel = move_members(member, after.channel)
+    
+    if member.id == target.id:
+        if after.channel is not None:
+            await asyncio.sleep(1)
+            await move_members(member, after.channel)
+            if state == 1:
+                set_target(get_random_victim(member))
+
                 
   
 
 
-def move_members(member, channel):
-    this_index = member.guild.voice_channels.index(channel)
-    vc_len = (member.guild.voice_channels)
-    if this_index < vc_len - 1:
+async def move_members(member, current_channel):
+    this_index = member.guild.voice_channels.index(current_channel)
+    vc_len = len((member.guild.voice_channels))
+    if (this_index < (vc_len - 1)):
         target_channel = member.guild.voice_channels[this_index + 1]
     else:
         target_channel = member.guild.voice_channels[0]
@@ -46,13 +49,12 @@ def move_members(member, channel):
                 await member.move_to(target_channel)
             except:
                 pass
-    return target_channel
+
      
 
 
 def get_random_victim(member):
-    troller = member
-    target_channel = troller.voice.channel
+    target_channel = member.voice.channel
     random_target = random.choice(target_channel.members)
     print('target_channel: ', target_channel)
     print('random_target: ', random_target)
@@ -77,11 +79,12 @@ async def on_message(message):
     if message.content.startswith('$random'):
         set_target(get_random_victim(message.author))
         state_to_1()
+        await move_members(message.author, message.author.voice.channel)
  
     if message.content.startswith('$choose') and len(message.mentions) == 1:
         set_target(message.mentions[0])
         state_to_2()
-         
+        await move_members(message.author, message.author.voice.channel) 
     
     if message.content.startswith('$state'):
         print('current state: ', state)
