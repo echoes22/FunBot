@@ -25,28 +25,30 @@ async def on_voice_state_update(member, before, after):
     if state == 0:
         return
     if state == 1:
-        if after.channel is not None:
-            if member.id == target_id:
-                if before.channel != after.channel:
-                    this_index = member.guild.voice_channels.index(after.channel)
-                    vc_len = len(member.guild.voice_channels)
-                    if this_index < vc_len - 1:
-                        target_channel = member.guild.voice_channels[this_index + 1]
-                    else:
-                        target_channel = member.guild.voice_channels[0]
-                    for member in member.voice.channel.members:
-                        if member.id != target_id:
-                            try:
-                                await member.move_to(target_channel)
-                            except:
-                                pass
-    return
+        if member.id == target.id:
+            if after.channel is not None:
+                move_members(member, after.channel)
+                
+  
 
 
-        
+def move_members(member, channel):
+    this_index = member.guild.voice_channels.index(channel)
+    vc_len = (member.guild.voice_channels)
+    if this_index < vc_len - 1:
+        target_channel = member.guild.voice_channels[this_index + 1]
+    else:
+        target_channel = member.guild.voice_channels[0]
+    for member in member.voice.channel.members:
+        if member != target:
+            try:
+                await member.move_to(target_channel)
+            except:
+                pass
+     
 
 
-def get_victim(message):
+def get_random_victim(message):
     troller = message.author
     target_channel = troller.voice.channel
     random_target = random.choice(target_channel.members)
@@ -71,12 +73,13 @@ async def on_message(message):
         await message.channel.send('Hello!')
 
     if message.content.startswith('$random'):
-        random_target = get_victim(message)
+        set_target(get_random_victim(message))
         state_to_1()
  
     
     if message.content.startswith('$state'):
         print('current state: ', state)
+        print('current target: ', target)
     
     if message.content.startswith('$choose') and len(message.mentions) == 1:
         set_target(message.mentions[0])
