@@ -1,7 +1,7 @@
 import discord
 import os
 import random
-from replit import db 
+import asyncio
 
 
 intents = discord.Intents.default()
@@ -27,7 +27,8 @@ async def on_voice_state_update(member, before, after):
     if state == 1:
         if member.id == target.id:
             if after.channel is not None:
-                move_members(member, after.channel)
+                await asyncio.sleep(1)
+                next_channel = move_members(member, after.channel)
                 
   
 
@@ -45,11 +46,12 @@ def move_members(member, channel):
                 await member.move_to(target_channel)
             except:
                 pass
+    return target_channel
      
 
 
-def get_random_victim(message):
-    troller = message.author
+def get_random_victim(member):
+    troller = member
     target_channel = troller.voice.channel
     random_target = random.choice(target_channel.members)
     print('target_channel: ', target_channel)
@@ -73,18 +75,19 @@ async def on_message(message):
         await message.channel.send('Hello!')
 
     if message.content.startswith('$random'):
-        set_target(get_random_victim(message))
+        set_target(get_random_victim(message.author))
         state_to_1()
  
+    if message.content.startswith('$choose') and len(message.mentions) == 1:
+        set_target(message.mentions[0])
+        state_to_2()
+         
     
     if message.content.startswith('$state'):
         print('current state: ', state)
         print('current target: ', target)
     
-    if message.content.startswith('$choose') and len(message.mentions) == 1:
-        set_target(message.mentions[0])
-        state_to_2()
-        
+   
 def state_to_1():
     global state
     state = 1
