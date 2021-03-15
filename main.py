@@ -56,8 +56,6 @@ async def move_members(member, current_channel):
 def get_random_victim(member):
     target_channel = member.voice.channel
     random_target = random.choice(target_channel.members)
-    print('target_channel: ', target_channel)
-    print('random_target: ', random_target)
     return random_target
        
 
@@ -68,13 +66,9 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    
     if message.author == client.user:
         return
-
-    if message.content.startswith('$hello'):
-        print(message.author.voice)
-
-        await message.channel.send('Hello!')
 
     if message.content.startswith('$random'):
         set_target(get_random_victim(message.author))
@@ -94,22 +88,18 @@ async def on_message(message):
 def state_to_1():
     global state
     state = 1
-    print('state to: ', state)
     return state
     
 def state_to_2():
     global state
     state = 2
-    print('state to: ', state)
     return state
 
 def set_target(new_target):
     global target
     target = new_target
-    print('new target: ', new_target)
     return target
 
 
-print('state global: ', state)
 
 client.run(os.getenv('TOKEN'))
