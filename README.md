@@ -1,6 +1,6 @@
-# TrollBot
+# FunBot
 
-Trollbot is a simple discord bot made using the Discord API and hosted on Replit. 
+FunBot is a simple discord bot made using the Discord API and hosted on Replit. 
 
 Its purpose is to mess with your friends, by selecting a target and moving everyone in the voice channel when the target joins.
 
