@@ -25,13 +25,13 @@ async def on_voice_state_update(member, before, after):
     before (VoiceState): Voice State prior to the changes
     after (VoiceState): Voice state after the changes
     """
-    
-    if member.id == target.id:
-        if after.channel is not None:
-            await asyncio.sleep(1)
-            await move_members(member, after.channel)
-            if state == 1:
-                set_target(get_random_victim(member))
+    if state != 0:
+        if member.id == target.id:
+            if after.channel is not None:
+                await asyncio.sleep(1)
+                await move_members(member, after.channel)
+                if state == 1:
+                    set_target(get_random_victim(member))
 
                   
 async def move_members(member, current_channel):
@@ -78,19 +78,19 @@ async def on_ready():
 @client.event
 async def on_message(message):
     """
-    Function that reacts to messages and sets the state and target (if state is 1)
+    Function that reacts to messages and sets the state and target (if state is 2)
     """
     #ignore messages from the bot itself
     if message.author == client.user:
         return
 
-    #sets state to random (0)
+    #sets state to random (1)
     if message.content.startswith('$random'):
         set_target(get_random_victim(message.author))
         state_to_1()
         await move_members(message.author, message.author.voice.channel)
  
-    #sets state to choose (1)
+    #sets state to choose (2)
     if message.content.startswith('$choose') and len(message.mentions) == 1:
         set_target(message.mentions[0])
         state_to_2()
